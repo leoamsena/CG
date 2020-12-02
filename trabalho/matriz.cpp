@@ -13,8 +13,10 @@ using namespace std;
 
 int anguloTotal = 0;
 int aux = 0;
+int anguloSino = 0,anguloBadalo = 0;
 
 double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
+double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3}};
 
 void init(void)
 {
@@ -37,8 +39,12 @@ void quartoDeCirculo(double *extremaEsquerda,double *baixo,double *cima,int qtdP
     glVertex3f(cima[0], cima[1], 0.0f);
 }
 
+void metadeFaceBaixo(){
+
+}
+
 void desenhaFaceBaixo(){
-    double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3}};
+    
     
     glPushMatrix();
         glBegin(GL_TRIANGLE_STRIP);
@@ -74,7 +80,7 @@ void desenhaFaceBaixo(){
 }
 
 void desenhaParteBaixo(){
-    glColor3f(1.0f, 1.0f, 1.0f); // branco
+    
     glPushMatrix();
         desenhaFaceBaixo();
     glPopMatrix();
@@ -123,7 +129,7 @@ void desenhaFaceMeio(){
 }
 
 void desenhaParteMeio(){
-   glColor3f(1.0f, 0.0f, 0.0f); // vermelho
+   
     glPushMatrix();
         glTranslatef(0.0,0.0,-0.1);
         desenhaFaceMeio();
@@ -164,7 +170,9 @@ void desenhaParteCima(){
 
 void desenhaSino(){
     glPushMatrix();
+        glRotatef(anguloSino,1.0,0.0,0.0);
         glRotatef(270,1.0,0.0,0.0);
+        
         glPushMatrix();
             gluCylinder(gluNewQuadric(),0.15f,0.1f,0.1f,32,32);
         glPopMatrix();
@@ -179,12 +187,17 @@ void desenhaSino(){
 
         // badalo
         glPushMatrix();
+
+            glColor3f(0.2,0.09,0.0);
+            glTranslatef(0.0,0.0,0.2);
+            glRotatef(anguloBadalo,1.0,0.0,0.0);
+            glTranslatef(0.0,0.0,-0.3);
             
-            glTranslatef(0.0,0.0,-0.1);
+            //glTranslatef(0.0,0.0,0.6);
+            
             gluCylinder(gluNewQuadric(),0.05f,0.05f,0.3f,32,32);
-            //glTranslatef(0.0,0.0,-0.1);
-            glColor3f(1.0,0.0,0.0);
-            glutSolidSphere(0.05,32,32);
+            
+            glutSolidSphere(0.06,32,32);
         glPopMatrix();
     glPopMatrix();
 }
@@ -193,7 +206,9 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+    glColor3f(1.0,0.0,0.0);
     glPushMatrix();
+        glTranslatef(-1.0,-2.0,3.0);
         glRotatef(anguloTotal,0.0,1.0,0.0);
         desenhaParteBaixo();
         glPushMatrix();
@@ -201,13 +216,15 @@ void display(void)
             desenhaParteMeio();
         glPopMatrix();
         glPushMatrix();
-            glColor3f(0.0f, 0.0f, 1.0f); // vermelho
+            
             glTranslatef(0.0,3.0,0.0);
             desenhaParteCima();
         glPopMatrix();
         glPushMatrix();
+            
             glTranslatef(0.5,4,-0.5);
-            glColor3f(1.0,0.0,0.0);
+            
+            glColor3f(1.0,1.0,0.0);
             desenhaSino();
         glPopMatrix();
     glPopMatrix();
@@ -241,6 +258,24 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'u':
             aux = (aux + 5) %360;
+            break;
+        case 's':
+            if((anguloSino+5)%360<10){
+                anguloSino = (anguloSino + 5) %360;
+                anguloBadalo = (anguloBadalo - (5+2)) %360;
+            }
+            break;
+        case 'S':
+            if((anguloSino+5)%360>-10){
+                anguloSino = (anguloSino - 5) %360;
+                anguloBadalo = (anguloBadalo + 5 + 2) %360;
+            }
+            break;
+        case 'b':
+            anguloBadalo = (anguloBadalo + 5) %360;
+            break;
+        case 'B':
+            anguloBadalo = (anguloBadalo - 5) %360;
             break;
         default:
             break;
