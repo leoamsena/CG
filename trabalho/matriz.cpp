@@ -16,7 +16,7 @@ int aux = 0;
 int anguloSino = 0,anguloBadalo = 0;
 
 double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
-double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3}};
+double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3},{0.5,3.0}};
 
 void init(void)
 {
@@ -39,42 +39,37 @@ void quartoDeCirculo(double *extremaEsquerda,double *baixo,double *cima,int qtdP
     glVertex3f(cima[0], cima[1], 0.0f);
 }
 
-void metadeFaceBaixo(){
-
+void desenhaMetadeFaceBaixo(){
+    glColor3f(1,0,0);
+    glBegin(GL_TRIANGLE_STRIP);
+        for(int i=0;i<5;i++)
+            glVertex3f(ptsBaixo[i][0], ptsBaixo[i][1], 0.0f);
+        quartoDeCirculo(ptsBaixo[4],ptsBaixo[3],ptsBaixo[5],5);
+        glVertex3f(ptsBaixo[6][0], ptsBaixo[6][1], 0.0f);
+        glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
+        glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
+        quartoDeCirculo(ptsBaixo[9],ptsBaixo[7],ptsBaixo[8],5);
+    glEnd();
+    glBegin(GL_TRIANGLE_STRIP);
+        glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
+        glVertex3f(ptsBaixo[9][0], ptsBaixo[9][1], 0.0f);
+        glVertex3f(ptsBaixo[5][0], ptsBaixo[5][1], 0.0f);
+    glEnd();
+    
+    
+    
 }
 
 void desenhaFaceBaixo(){
-    
-    
     glPushMatrix();
-        glBegin(GL_TRIANGLE_STRIP);
-            // lado esquerdo
-            
-            for(int i=0;i<5;i++)
-                glVertex3f(ptsBaixo[i][0], ptsBaixo[i][1], 0.0f);
-            quartoDeCirculo(ptsBaixo[4],ptsBaixo[3],ptsBaixo[5],5);
-            glVertex3f(ptsBaixo[6][0], ptsBaixo[6][1], 0.0f);
-            glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
-            glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
-            quartoDeCirculo(ptsBaixo[7],ptsBaixo[7],ptsBaixo[8],5);
-            glVertex3f(ptsBaixo[5][0], ptsBaixo[5][1], 0.0f);
-        glEnd();
+        desenhaMetadeFaceBaixo();
+        
     glPopMatrix();
 
     glPushMatrix();
         glRotatef(180,0.0,1.0,0.0);
         glTranslatef(-1.0,0.0,0.0);
-        glBegin(GL_TRIANGLE_STRIP);
-            // lado direito
-            
-            for(int i=0;i<5;i++)
-                glVertex3f(ptsBaixo[i][0], ptsBaixo[i][1], 0.0f);
-            quartoDeCirculo(ptsBaixo[4],ptsBaixo[3],ptsBaixo[5],5);
-            glVertex3f(ptsBaixo[6][0], ptsBaixo[6][1], 0.0f);
-            glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
-            glVertex3f(ptsBaixo[7][0], ptsBaixo[7][1], 0.0f);
-            quartoDeCirculo(ptsBaixo[7],ptsBaixo[7],ptsBaixo[8],5);
-            glVertex3f(ptsBaixo[5][0], ptsBaixo[5][1], 0.0f);
+        desenhaMetadeFaceBaixo();
         glEnd();
     glPopMatrix();
 }
@@ -86,7 +81,6 @@ void desenhaParteBaixo(){
     glPopMatrix();
     glPushMatrix();
         glRotatef(90,0.0,1.0,0.0);
-        
         desenhaFaceBaixo();
     glPopMatrix();
     
@@ -98,9 +92,16 @@ void desenhaParteBaixo(){
     glPopMatrix();
 
     glPushMatrix();
-        
         glTranslatef(0.0,0.0,-1.0);
         desenhaFaceBaixo();
+    glPopMatrix();
+    glPushMatrix();
+        glBegin(GL_QUADS);
+            glVertex3f(0.0f, ptsBaixo[6][1], 0.0f);
+            glVertex3f(1.0f, ptsBaixo[9][1], 0.0f);
+            glVertex3f(1.0f, ptsBaixo[9][1], -1.0f);
+            glVertex3f(0.0, ptsBaixo[6][1], -1.0f);
+        glEnd();
     glPopMatrix();
     
 }
@@ -178,10 +179,10 @@ void desenhaSino(){
         glPopMatrix();
         glPushMatrix();
             glTranslatef(0.0,0.0,0.1);
-            gluCylinder(gluNewQuadric(),0.1f,0.1f,0.1f,32,32);
+            gluCylinder(gluNewQuadric(),0.1f,0.1f,0.2f,32,32);
         glPopMatrix();
         glPushMatrix();
-            glTranslatef(0.0,0.0,0.2);
+            glTranslatef(0.0,0.0,0.3);
             gluCylinder(gluNewQuadric(),0.1f,0.0f,0.1f,32,32);
         glPopMatrix();
 
@@ -202,13 +203,102 @@ void desenhaSino(){
     glPopMatrix();
 }
 
+void desenhaCirculoCompleto(double raio){
+    double ptsAux[][2]= {{raio,0.0},{0.0,0.0},{raio,raio}};
+    glPushMatrix();
+        glBegin(GL_TRIANGLE_STRIP);
+            quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
+        glEnd();
+    glPopMatrix();
+    glPushMatrix();
+        glRotatef(180,0.0,1.0,0.0);
+        glTranslatef(-0.5,0.0,0.0);
+        glBegin(GL_TRIANGLE_STRIP);
+            quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
+        glEnd();
+    glPopMatrix();
+
+
+    // baixo relogio
+    glPushMatrix();
+        glRotatef(180,1.0,0.0,0.0);
+        //glTranslatef(0.0,0.5,0.0);
+        glPushMatrix();
+            glBegin(GL_TRIANGLE_STRIP);
+                quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
+            glEnd();
+        glPopMatrix();
+        glPushMatrix();
+            glRotatef(180,0.0,1.0,0.0);
+            glTranslatef(-0.5,0.0,0.0);
+            glBegin(GL_TRIANGLE_STRIP);
+                quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
+            glEnd();
+        glPopMatrix();
+    glPopMatrix();
+}
+
+void desenhaRelogio(){
+    
+    glPushMatrix();
+        
+        desenhaCirculoCompleto(0.25);
+        
+        glPushMatrix();
+            glTranslatef(0.25,0.0,0.0);
+            gluCylinder(gluNewQuadric(),0.25f,0.25f,0.1f,32,32);
+        glPopMatrix();
+        
+        glTranslatef(0.0,0.0,0.1);
+        desenhaCirculoCompleto(0.25);
+    glPopMatrix();
+}
+
+void ilumina(void)
+{
+    
+    GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
+    GLfloat luzDifusa[4] = { 0.7,0.7,0.7,1.0 };	   // "cor" 
+    GLfloat luzEspecular[4] = { 1.0, 1.0, 1.0, 1.0 };// "brilho" 
+    GLfloat posicaoLuz[4] = { -50.0, 50.0, 10.0, 0.0 };
+
+    // Capacidade de brilho do material
+    GLfloat especularidade[4] = { 0.0,0.0,0.0,0.0 };
+    GLint especMaterial = 10;
+    // Habilita o modelo de colorização de Gouraud
+    glShadeModel(GL_SMOOTH);
+
+    // Define a refletância do material 
+    glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
+    // Define a concentração do brilho
+    glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
+
+    // Ativa o uso da luz ambiente 
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+
+    // Define os parâmetros da luz de número 0
+    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
+    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz);
+
+    // Habilita a definição da cor do material a partir da cor corrente
+    glEnable(GL_COLOR_MATERIAL);
+    //Habilita o uso de iluminação
+    glEnable(GL_LIGHTING);
+    // Habilita a luz de número 0
+    glEnable(GL_LIGHT0);
+    // Habilita o depth-buffering
+    glEnable(GL_DEPTH_TEST);
+}
+
 void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glColor3f(1.0,0.0,0.0);
     glPushMatrix();
-        glTranslatef(-1.0,-2.0,3.0);
+        glTranslatef(-1.0,-2.0,1.0);
         glRotatef(anguloTotal,0.0,1.0,0.0);
         desenhaParteBaixo();
         glPushMatrix();
@@ -216,16 +306,18 @@ void display(void)
             desenhaParteMeio();
         glPopMatrix();
         glPushMatrix();
-            
             glTranslatef(0.0,3.0,0.0);
             desenhaParteCima();
         glPopMatrix();
         glPushMatrix();
-            
-            glTranslatef(0.5,4,-0.5);
-            
+            glTranslatef(0.5,3.6,-0.5);
             glColor3f(1.0,1.0,0.0);
             desenhaSino();
+        glPopMatrix();
+        glPushMatrix();
+            glColor3f(0.0,0.0,1.0);
+            glTranslatef(0.25,3.0,0.01);
+            desenhaRelogio();
         glPopMatrix();
     glPopMatrix();
     glutSwapBuffers();
@@ -294,6 +386,8 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    ilumina();
     glutMainLoop();
+    
     return 0;
 }
