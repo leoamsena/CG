@@ -162,11 +162,35 @@ void desenhaParteCima(){
     glPopMatrix();
 }
 
+void desenhaSino(){
+    glPushMatrix();
+        glRotatef(270,1.0,0.0,0.0);
+        glPushMatrix();
+            gluCylinder(gluNewQuadric(),0.15f,0.1f,0.1f,32,32);
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(0.0,0.0,0.1);
+            gluCylinder(gluNewQuadric(),0.1f,0.1f,0.1f,32,32);
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(0.0,0.0,0.2);
+            gluCylinder(gluNewQuadric(),0.1f,0.0f,0.1f,32,32);
+        glPopMatrix();
+
+        // badalo
+        glPushMatrix();
+            
+            glTranslatef(0.0,0.0,-0.1);
+            gluCylinder(gluNewQuadric(),0.05f,0.05f,0.3f,32,32);
+            //glTranslatef(0.0,0.0,-0.1);
+            glColor3f(1.0,0.0,0.0);
+            glutSolidSphere(0.05,32,32);
+        glPopMatrix();
+    glPopMatrix();
+}
+
 void display(void)
 {
-    
-
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glPushMatrix();
@@ -180,6 +204,11 @@ void display(void)
             glColor3f(0.0f, 0.0f, 1.0f); // vermelho
             glTranslatef(0.0,3.0,0.0);
             desenhaParteCima();
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(0.5,4,-0.5);
+            glColor3f(1.0,0.0,0.0);
+            desenhaSino();
         glPopMatrix();
     glPopMatrix();
     glutSwapBuffers();
