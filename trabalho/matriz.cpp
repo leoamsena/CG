@@ -13,7 +13,7 @@ using namespace std;
 
 int anguloTotal = 0;
 int aux = 0;
-int anguloSino = 0,anguloBadalo = 0;
+int anguloSino = 0,anguloBadalo = 0,anguloMinutos =0,anguloHoras=0;
 
 double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
 double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3},{0.5,3.0}};
@@ -251,6 +251,29 @@ void desenhaRelogio(){
         
         glTranslatef(0.0,0.0,0.1);
         desenhaCirculoCompleto(0.25);
+        
+        glTranslatef(0.25,0.0,0.01);
+        glPushMatrix();
+            glRotatef(anguloMinutos,0.0,0.0,1.0);
+            glColor3f(0.0,1.0,1.0);
+            glBegin(GL_QUADS);
+                glVertex3f(0.0,0.0,0.0);
+                glVertex3f(0.03,0.15,0.0);
+                glVertex3f(0.0,0.2,0.0);
+                glVertex3f(-0.03,0.15,0.0);
+            glEnd();
+        glPopMatrix();
+        glPushMatrix();
+            glRotatef(anguloHoras,0.0,0.0,1.0);
+            glColor3f(1.0,1.0,1.0);
+            glBegin(GL_QUADS);
+                glVertex3f(0.0,0.0,0.0);
+                glVertex3f(0.03,0.10,0.0);
+                glVertex3f(0.0,0.15,0.0);
+                glVertex3f(-0.03,0.10,0.0);
+            glEnd();
+        glPopMatrix();
+
     glPopMatrix();
 }
 
@@ -298,7 +321,7 @@ void display(void)
     glEnable(GL_DEPTH_TEST);
     glColor3f(1.0,0.0,0.0);
     glPushMatrix();
-        glTranslatef(-1.0,-2.0,1.0);
+        glTranslatef(-1.0,-2.0,aux);
         glRotatef(anguloTotal,0.0,1.0,0.0);
         desenhaParteBaixo();
         glPushMatrix();
@@ -349,8 +372,12 @@ void keyboard(unsigned char key, int x, int y)
             anguloTotal = (anguloTotal + 5) %360;
             break;
         case 'u':
-            aux = (aux + 5) %360;
+            aux = (aux + 1);
             break;
+        case 'U':
+            aux = (aux -1);
+            break;
+
         case 's':
             if((anguloSino+5)%360<10){
                 anguloSino = (anguloSino + 5) %360;
@@ -368,6 +395,12 @@ void keyboard(unsigned char key, int x, int y)
             break;
         case 'B':
             anguloBadalo = (anguloBadalo - 5) %360;
+            break;
+        case 'm':
+            anguloMinutos = (anguloMinutos + 5) %360;
+            break;
+        case 'h':
+            anguloHoras = (anguloHoras + 5) %360;
             break;
         default:
             break;
