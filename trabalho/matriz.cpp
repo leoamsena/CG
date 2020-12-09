@@ -106,6 +106,44 @@ void desenhaParteBaixo(){
     
 }
 
+void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJanela,double alturaParede){
+    double extremaEsquerda[] ={0.0f,alturaParede,0.0f},baixo[]={xFinal - 0.3,yBaixo,0.0f},cima[]={xFinal,alturaParede,0.0f};
+    cout<<xFinal<<" "<<alturaJanela<<endl;
+    glBegin(GL_TRIANGLE_STRIP);
+        glVertex3f(xFinal,0.0f,0.0f); // 1
+        glVertex3f(0.0f,0.0f,0.0f); // 2
+        glVertex3f(xFinal,yBaixo,0.0f); // 3
+        glVertex3f(0.0f,yBaixo,0.0f); //4
+        glVertex3f(baixo[0],baixo[1],baixo[2]); //5
+        glVertex3f(0.0f,alturaParede,0.0f);//6
+        glVertex3f(0.0f,alturaParede,0.0f); //6
+        quartoDeCirculo(extremaEsquerda,baixo,cima,300);
+    glEnd();
+    
+}
+
+void desenharFaceLateral(int numeroJanelas=1){
+    double larguraParede = 2.0, alturaParede = 1.5,alturaJanela = alturaParede/2;
+
+    double xFinal,yBaixo;
+    
+
+    xFinal = larguraParede/(numeroJanelas+1);
+    yBaixo = alturaParede - alturaJanela;
+    
+    glPushMatrix();
+        for(int i=0;i<numeroJanelas;i++){
+            glPushMatrix();
+                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede);
+                glTranslatef(xFinal*2,0.0,0.0);
+                glRotatef(180,0.0,1.0,0.0);
+                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede);
+            glPopMatrix();
+            glTranslatef(xFinal*2,0.0,0.0);
+        }
+    glPopMatrix();
+}
+
 void desenhaFaceMeio(){  
     glPushMatrix();
         glBegin(GL_TRIANGLE_STRIP);
@@ -341,6 +379,12 @@ void display(void)
             glColor3f(0.0,0.0,1.0);
             glTranslatef(0.25,3.0,0.01);
             desenhaRelogio();
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(2.0,0.0,0.0);
+            desenharFaceLateral(2);
+            glTranslatef(3.0,0.0,0.0);
+            desenharFaceLateral(1);
         glPopMatrix();
     glPopMatrix();
     glutSwapBuffers();
