@@ -108,7 +108,6 @@ void desenhaParteBaixo(){
 
 void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJanela,double alturaParede){
     double extremaEsquerda[] ={0.0f,alturaParede,0.0f},baixo[]={xFinal - 0.3,yBaixo,0.0f},cima[]={xFinal,alturaParede,0.0f};
-    cout<<xFinal<<" "<<alturaJanela<<endl;
     glBegin(GL_TRIANGLE_STRIP);
         glVertex3f(xFinal,0.0f,0.0f); // 1
         glVertex3f(0.0f,0.0f,0.0f); // 2
@@ -122,8 +121,8 @@ void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJan
     
 }
 
-void desenharFaceLateral(int numeroJanelas=1){
-    double larguraParede = 2.0, alturaParede = 1.5,alturaJanela = alturaParede/2;
+void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0){
+    double  alturaParede = 1.5,alturaJanela = alturaParede/2;
 
     double xFinal,yBaixo;
     
@@ -132,11 +131,12 @@ void desenharFaceLateral(int numeroJanelas=1){
     yBaixo = alturaParede - alturaJanela;
     
     glPushMatrix();
+
         for(int i=0;i<numeroJanelas;i++){
             glPushMatrix();
                 desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede);
                 glTranslatef(xFinal*2,0.0,0.0);
-                glRotatef(180,0.0,1.0,0.0);
+                glRotatef(180,0.0,1.0,0.0);                
                 desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede);
             glPopMatrix();
             glTranslatef(xFinal*2,0.0,0.0);
@@ -359,8 +359,9 @@ void display(void)
     glEnable(GL_DEPTH_TEST);
     glColor3f(1.0,0.0,0.0);
     glPushMatrix();
-        glTranslatef(-1.0,-2.0,aux);
-        glRotatef(anguloTotal,0.0,1.0,0.0);
+        //glTranslatef(-1.0,-2.0,rotacaoGeral);
+        glRotatef(anguloTotal,1.0,0.0,0.0); // y
+        
         desenhaParteBaixo();
         glPushMatrix();
             glTranslatef(0.0,3.0,0.0);
@@ -380,11 +381,23 @@ void display(void)
             glTranslatef(0.25,3.0,0.01);
             desenhaRelogio();
         glPopMatrix();
+        
         glPushMatrix();
-            glTranslatef(2.0,0.0,0.0);
-            desenharFaceLateral(2);
-            glTranslatef(3.0,0.0,0.0);
-            desenharFaceLateral(1);
+            glTranslatef(-3.5,0.0,0.0);
+            glTranslatef(2.0,0.0,-1.0);
+            desenharFaceLateral(2,3); // face frontal
+            glTranslatef(4.0,0.0,0.0);
+           
+
+            glRotatef(90,0.0,1.0,0.0); 
+            desenharFaceLateral(2,3); // face direita
+            
+            glTranslatef(0.0,0.0,-4);
+            desenharFaceLateral(2,3); // face esquerda
+
+            glRotatef(-90,0.0,1.0,0.0);
+            glTranslatef(0.0,0.0,-4);
+            desenharFaceLateral(1,4);
         glPopMatrix();
     glPopMatrix();
     glutSwapBuffers();
