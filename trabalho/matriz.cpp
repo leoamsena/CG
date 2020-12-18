@@ -207,6 +207,15 @@ void desenhaParteCima(){
     glPopMatrix();
 }
 
+void desenhaRetangulo(double h,double l){
+    glBegin(GL_QUADS);
+        glVertex3f(0.0,0.0,0.0);
+        glVertex3f(h,0.0,0.0);
+        glVertex3f(h,l,0.0);
+        glVertex3f(0.0,l,0.0);
+    glEnd();
+}
+
 void desenhaSino(){
     glPushMatrix();
         glRotatef(anguloSino,1.0,0.0,0.0);
@@ -382,7 +391,7 @@ void display(void)
             desenhaRelogio();
         glPopMatrix();
         
-        glPushMatrix();
+        glPushMatrix(); // igreja em si (paralelepipedo)
             glTranslatef(-3.5,0.0,0.0);
             glTranslatef(2.0,0.0,-1.0);
             desenharFaceLateral(2,3); // face frontal
@@ -397,7 +406,15 @@ void display(void)
 
             glRotatef(-90,0.0,1.0,0.0);
             glTranslatef(0.0,0.0,-4);
-            desenharFaceLateral(1,4);
+            desenharFaceLateral(1,4); // face traseira
+            
+            glColor3f(1.0,1.0,0.0);
+            glRotatef(90,1.0,0.0,0.0);
+            desenhaRetangulo(4.0,4.0);
+
+            glColor3f(1.0,0.0,1.0);
+            glTranslatef(0.0,0.0,-1.5);
+            desenhaRetangulo(4.0,4.0);
         glPopMatrix();
     glPopMatrix();
     glutSwapBuffers();
