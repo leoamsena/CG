@@ -319,16 +319,18 @@ void desenhaCirculoCompleto(double raio){
     double ptsAux[][2]= {{raio,0.0},{0.0,0.0},{raio,raio}};
     
     glPushMatrix();
+        sinalNorma = POSITIVO;
         glBegin(GL_TRIANGLE_STRIP);
-            
+            glNormal3fv(calculaNorma());
             quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
         glEnd();
     glPopMatrix();
     glPushMatrix();
         glRotatef(180,0.0,1.0,0.0);
         glTranslatef(-0.5,0.0,0.0);
+        sinalNorma = NEGATIVO;
         glBegin(GL_TRIANGLE_STRIP);
-            
+            glNormal3fv(calculaNorma());
             quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
         glEnd();
     glPopMatrix();
@@ -338,8 +340,10 @@ void desenhaCirculoCompleto(double raio){
     glPushMatrix();
         glRotatef(180,1.0,0.0,0.0);
         //glTranslatef(0.0,0.5,0.0);
+        sinalNorma = NEGATIVO;
         glPushMatrix();
             glBegin(GL_TRIANGLE_STRIP);
+                glNormal3fv(calculaNorma());
                 
                 quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
             glEnd();
@@ -347,8 +351,9 @@ void desenhaCirculoCompleto(double raio){
         glPushMatrix();
             glRotatef(180,0.0,1.0,0.0);
             glTranslatef(-0.5,0.0,0.0);
+            sinalNorma = POSITIVO;
             glBegin(GL_TRIANGLE_STRIP);
-                
+                glNormal3fv(calculaNorma());
                 quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
             glEnd();
         glPopMatrix();
@@ -360,6 +365,7 @@ void desenhaRelogio(){
     glPushMatrix();
         
         desenhaCirculoCompleto(0.25);
+        
         
         glPushMatrix();
             glTranslatef(0.25,0.0,0.0);
