@@ -270,7 +270,10 @@ void desenhaParteCima(){
 }
 
 void desenhaRetangulo(double h,double l){
+    eixoNorma = EIXO_Z;
+    
     glBegin(GL_QUADS);
+        glNormal3fv(calculaNorma());
         glVertex3f(0.0,0.0,0.0);
         glVertex3f(h,0.0,0.0);
         glVertex3f(h,l,0.0);
@@ -484,10 +487,11 @@ void display(void)
             glTranslatef(0.0,0.0,-4);
             desenharFaceLateral(1,4); // face traseira
             
+            sinalNorma = POSITIVO;
             glColor3f(1.0,1.0,0.0);
             glRotatef(90,1.0,0.0,0.0);
             desenhaRetangulo(4.0,4.0);
-
+            sinalNorma = NEGATIVO;
             glColor3f(1.0,0.0,1.0);
             glTranslatef(0.0,0.0,-1.5);
             desenhaRetangulo(4.0,4.0);
