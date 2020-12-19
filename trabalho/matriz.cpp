@@ -106,22 +106,26 @@ void desenhaParteBaixo(){
     
 }
 
-void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJanela,double alturaParede){
-    double extremaEsquerda[] ={0.0f,alturaParede,0.0f},baixo[]={xFinal - 0.3,yBaixo,0.0f},cima[]={xFinal,alturaParede,0.0f};
+void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJanela,double alturaParede,bool comecoMenor=false){
+    double baixo[]={xFinal - 0.3,yBaixo,0.0f},cima[]={xFinal,alturaParede,0.0f};
+    double xInicial = comecoMenor?(baixo[0]-0.2):0.0;
+    double extremaEsquerda[] ={xInicial,alturaParede,0.0f};
+    
+    
     glBegin(GL_TRIANGLE_STRIP);
         glVertex3f(xFinal,0.0f,0.0f); // 1
-        glVertex3f(0.0f,0.0f,0.0f); // 2
+        glVertex3f(xInicial,0.0f,0.0f); // 2
         glVertex3f(xFinal,yBaixo,0.0f); // 3
-        glVertex3f(0.0f,yBaixo,0.0f); //4
+        glVertex3f(xInicial,yBaixo,0.0f); //4
         glVertex3f(baixo[0],baixo[1],baixo[2]); //5
-        glVertex3f(0.0f,alturaParede,0.0f);//6
-        glVertex3f(0.0f,alturaParede,0.0f); //6
+        glVertex3f(xInicial,alturaParede,0.0f);//6
+        glVertex3f(xInicial,alturaParede,0.0f); //6
         quartoDeCirculo(extremaEsquerda,baixo,cima,300);
     glEnd();
     
 }
 
-void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0){
+void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0,bool portaNoMeio=false){
     double  alturaParede = 1.5,alturaJanela = alturaParede/2;
 
     double xFinal,yBaixo;
@@ -129,15 +133,16 @@ void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0){
 
     xFinal = larguraParede/(numeroJanelas+1);
     yBaixo = alturaParede - alturaJanela;
-    
+    int portaAPartirDaJanela = numeroJanelas>1?(numeroJanelas / 2):-1; // so tem porta no meio se numeroJanelas > 1
+    portaAPartirDaJanela--;
     glPushMatrix();
 
         for(int i=0;i<numeroJanelas;i++){
             glPushMatrix();
-                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede);
+                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede,portaNoMeio && i-1==portaAPartirDaJanela);
                 glTranslatef(xFinal*2,0.0,0.0);
                 glRotatef(180,0.0,1.0,0.0);                
-                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede);
+                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede,portaNoMeio && i == portaAPartirDaJanela);
             glPopMatrix();
             glTranslatef(xFinal*2,0.0,0.0);
         }
@@ -394,10 +399,11 @@ void display(void)
         glPushMatrix(); // igreja em si (paralelepipedo)
             glTranslatef(-3.5,0.0,0.0);
             glTranslatef(2.0,0.0,-1.0);
-            desenharFaceLateral(2,3); // face frontal
+            glColor3f(0.0,1.0,1.0);
+            desenharFaceLateral(2,3,true); // face frontal
             glTranslatef(4.0,0.0,0.0);
            
-
+            glColor3f(1.0,1.0,1.0);
             glRotatef(90,0.0,1.0,0.0); 
             desenharFaceLateral(2,3); // face direita
             
