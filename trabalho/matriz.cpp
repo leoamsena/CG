@@ -10,18 +10,34 @@
 using namespace std;
 
 #define PI 3.14159265359
+#define EIXO_Z 2
+#define EIXO_Y 1
+#define EIXO_X 0
+#define POSITIVO 1
+#define NEGATIVO -1
 
 int anguloTotal = 0;
 int aux = 0;
 int anguloSino = 0,anguloBadalo = 0,anguloMinutos =0,anguloHoras=0;
+GLfloat positionLuz [] = { 0.0, 0.0, 2.0, 1.0 };
+
+int eixoNorma;
+int sinalNorma = POSITIVO;
+GLfloat* calculaNorma(){
+    static GLfloat norma[] = {0.0,0.0,0.0};
+    norma[eixoNorma] = sinalNorma*1.0;
+    return norma;
+}
+
 
 double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
 double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3},{0.5,3.0}};
-
+void ilumina(void);
 void init(void)
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glShadeModel(GL_FLAT);
+    ilumina();
 }
 void quartoDeCirculo(double *extremaEsquerda,double *baixo,double *cima,int qtdPts){
     
@@ -42,6 +58,7 @@ void quartoDeCirculo(double *extremaEsquerda,double *baixo,double *cima,int qtdP
 void desenhaMetadeFaceBaixo(){
     glColor3f(1,0,0);
     glBegin(GL_TRIANGLE_STRIP);
+        glNormal3fv(calculaNorma());
         for(int i=0;i<5;i++)
             glVertex3f(ptsBaixo[i][0], ptsBaixo[i][1], 0.0f);
         quartoDeCirculo(ptsBaixo[4],ptsBaixo[3],ptsBaixo[5],5);
@@ -60,7 +77,19 @@ void desenhaMetadeFaceBaixo(){
     
 }
 
+void desenhaCrucifixo(){
+    glPushMatrix();
+        glScalef(1.0,2.5,1.0);
+        glutSolidCube(0.15);
+    glPopMatrix();
+    glPushMatrix();
+        glScalef(2.5,1.0,1.0);
+        glutSolidCube(0.15);
+    glPopMatrix();
+}
+
 void desenhaFaceBaixo(){
+    
     glPushMatrix();
         desenhaMetadeFaceBaixo();
         
@@ -69,6 +98,7 @@ void desenhaFaceBaixo(){
     glPushMatrix();
         glRotatef(180,0.0,1.0,0.0);
         glTranslatef(-1.0,0.0,0.0);
+        sinalNorma = -1*sinalNorma;
         desenhaMetadeFaceBaixo();
         glEnd();
     glPopMatrix();
@@ -77,6 +107,8 @@ void desenhaFaceBaixo(){
 void desenhaParteBaixo(){
     
     glPushMatrix();
+        eixoNorma = EIXO_Z;
+        sinalNorma = POSITIVO;
         desenhaFaceBaixo();
     glPopMatrix();
     glPushMatrix();
@@ -111,8 +143,9 @@ void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJan
     double xInicial = comecoMenor?(baixo[0]-0.2):0.0;
     double extremaEsquerda[] ={xInicial,alturaParede,0.0f};
     
-    
+
     glBegin(GL_TRIANGLE_STRIP);
+        glNormal3fv(calculaNorma());
         glVertex3f(xFinal,0.0f,0.0f); // 1
         glVertex3f(xInicial,0.0f,0.0f); // 2
         glVertex3f(xFinal,yBaixo,0.0f); // 3
@@ -120,10 +153,14 @@ void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJan
         glVertex3f(baixo[0],baixo[1],baixo[2]); //5
         glVertex3f(xInicial,alturaParede,0.0f);//6
         glVertex3f(xInicial,alturaParede,0.0f); //6
+        
         quartoDeCirculo(extremaEsquerda,baixo,cima,300);
     glEnd();
     
+    
 }
+
+
 
 void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0,bool portaNoMeio=false){
     double  alturaParede = 1.5,alturaJanela = alturaParede/2;
@@ -138,11 +175,15 @@ void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0,bool porta
     glPushMatrix();
 
         for(int i=0;i<numeroJanelas;i++){
+            GLfloat norma = {};
             glPushMatrix();
+                
                 desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede,portaNoMeio && i-1==portaAPartirDaJanela);
                 glTranslatef(xFinal*2,0.0,0.0);
-                glRotatef(180,0.0,1.0,0.0);                
+                glRotatef(180,0.0,1.0,0.0);   
+                sinalNorma = -1*sinalNorma;
                 desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede,portaNoMeio && i == portaAPartirDaJanela);
+                sinalNorma = -1*sinalNorma;
             glPopMatrix();
             glTranslatef(xFinal*2,0.0,0.0);
         }
@@ -152,6 +193,7 @@ void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0,bool porta
 void desenhaFaceMeio(){  
     glPushMatrix();
         glBegin(GL_TRIANGLE_STRIP);
+            glNormal3fv(calculaNorma());
             for(int i=0;i<5;i++)
                 glVertex3f(ptsMeio[i][0], ptsMeio[i][1], 0.0f);
             quartoDeCirculo(ptsMeio[4],ptsMeio[3],ptsMeio[5],10);
@@ -159,10 +201,13 @@ void desenhaFaceMeio(){
             glVertex3f(ptsMeio[7][0], ptsMeio[7][1], 0.0f);
         glEnd();
     glPopMatrix();
+    sinalNorma = -1*sinalNorma;
+    
     glPushMatrix();
         glRotatef(180,0.0,1.0,0.0);
         glTranslatef(-1.0,0.0,0.0);
         glBegin(GL_TRIANGLE_STRIP);
+            glNormal3fv(calculaNorma());
             for(int i=0;i<5;i++)
                     glVertex3f(ptsMeio[i][0], ptsMeio[i][1], 0.0f);
                 quartoDeCirculo(ptsMeio[4],ptsMeio[3],ptsMeio[5],10);
@@ -170,27 +215,33 @@ void desenhaFaceMeio(){
                 glVertex3f(ptsMeio[7][0], ptsMeio[7][1], 0.0f);
         glEnd();
     glPopMatrix();
+    sinalNorma = -1*sinalNorma;
 }
 
 void desenhaParteMeio(){
+    eixoNorma = EIXO_Z;
+    sinalNorma = POSITIVO;
    
     glPushMatrix();
         glTranslatef(0.0,0.0,-0.1);
         desenhaFaceMeio();
     glPopMatrix();
+    sinalNorma = NEGATIVO;
     glPushMatrix();
         glRotatef(90,0.0,1.0,0.0);
         glTranslatef(0.0,0.0,0.1);
         desenhaFaceMeio();
     glPopMatrix();
-    
+    sinalNorma = POSITIVO;
     glPushMatrix();
         glRotatef(90,0.0,1.0,0.0);
         glTranslatef(0.0,0.0,0.9);        
         desenhaFaceMeio();
     glPopMatrix();
 
+    sinalNorma = NEGATIVO;
     glPushMatrix();
+
         glTranslatef(0.0,0.0,-0.9);
         desenhaFaceMeio();
     glPopMatrix();
@@ -200,13 +251,19 @@ void desenhaParteMeio(){
 
 void desenhaParteCima(){
     glPushMatrix();
-        glBegin(GL_TRIANGLE_FAN);
-            glVertex3f(0.5,ptsMeio[6][1]+1.0,-0.4);
-            glVertex3f(ptsMeio[6][0],ptsMeio[6][1],0.0);
-            glVertex3f(ptsMeio[6][0]+0.8,ptsMeio[6][1],0.0);
-            glVertex3f(ptsMeio[6][0]+0.8,ptsMeio[6][1],-1.0);
-            glVertex3f(ptsMeio[6][0],ptsMeio[6][1],-1.0);
-            glVertex3f(ptsMeio[6][0],ptsMeio[6][1],0.0);
+        glBegin(GL_TRIANGLE_FAN);   
+            
+            glVertex3f(0.5,ptsMeio[6][1]+1.0,-0.4);//ponta
+            
+            glNormal3f(0.0f,1/sqrt(2),1/sqrt(2));
+            glVertex3f(ptsMeio[6][0],ptsMeio[6][1],0.0); // 1
+            glVertex3f(ptsMeio[6][0]+0.8,ptsMeio[6][1],0.0);//2
+            glNormal3f(1/sqrt(2),1/sqrt(2),0.0f);
+            glVertex3f(ptsMeio[6][0]+0.8,ptsMeio[6][1],-1.0);//3
+            glNormal3f(0.0f,-1/sqrt(2),-1/sqrt(2));
+            glVertex3f(ptsMeio[6][0],ptsMeio[6][1],-1.0);//4
+            glNormal3f(-1/sqrt(2),-1/sqrt(2),0.0f);
+            glVertex3f(ptsMeio[6][0],ptsMeio[6][1],0.0); // 1
 
         glEnd();
     glPopMatrix();
@@ -257,8 +314,10 @@ void desenhaSino(){
 
 void desenhaCirculoCompleto(double raio){
     double ptsAux[][2]= {{raio,0.0},{0.0,0.0},{raio,raio}};
+    
     glPushMatrix();
         glBegin(GL_TRIANGLE_STRIP);
+            
             quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
         glEnd();
     glPopMatrix();
@@ -266,6 +325,7 @@ void desenhaCirculoCompleto(double raio){
         glRotatef(180,0.0,1.0,0.0);
         glTranslatef(-0.5,0.0,0.0);
         glBegin(GL_TRIANGLE_STRIP);
+            
             quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
         glEnd();
     glPopMatrix();
@@ -277,6 +337,7 @@ void desenhaCirculoCompleto(double raio){
         //glTranslatef(0.0,0.5,0.0);
         glPushMatrix();
             glBegin(GL_TRIANGLE_STRIP);
+                
                 quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
             glEnd();
         glPopMatrix();
@@ -284,6 +345,7 @@ void desenhaCirculoCompleto(double raio){
             glRotatef(180,0.0,1.0,0.0);
             glTranslatef(-0.5,0.0,0.0);
             glBegin(GL_TRIANGLE_STRIP);
+                
                 quartoDeCirculo(ptsAux[0],ptsAux[1],ptsAux[2],100);
             glEnd();
         glPopMatrix();
@@ -332,39 +394,28 @@ void desenhaRelogio(){
 void ilumina(void)
 {
     
-    GLfloat luzAmbiente[4] = { 0.2,0.2,0.2,1.0 };
-    GLfloat luzDifusa[4] = { 0.7,0.7,0.7,1.0 };	   // "cor" 
-    GLfloat luzEspecular[4] = { 1.0, 1.0, 1.0, 1.0 };// "brilho" 
-    GLfloat posicaoLuz[4] = { -50.0, 50.0, 10.0, 0.0 };
+    GLfloat difusa[] = { 1.0, 1.0, 1.0, 1.0};
+    
+    glShadeModel(GL_FLAT); // especifica o método de iluminação constrante
+    glColorMaterial(GL_FRONT_AND_BACK,GL_DIFFUSE); // determina que a reflexão aconteça para as faces de frente e de trás dos objetos
+    //glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT);
 
-    // Capacidade de brilho do material
-    GLfloat especularidade[4] = { 0.0,0.0,0.0,0.0 };
-    GLint especMaterial = 10;
-    // Habilita o modelo de colorização de Gouraud
-    glShadeModel(GL_SMOOTH);
 
-    // Define a refletância do material 
-    glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
-    // Define a concentração do brilho
-    glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
 
-    // Ativa o uso da luz ambiente 
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+    glEnable(GL_COLOR_MATERIAL); // habilita as colorações
 
-    // Define os parâmetros da luz de número 0
-    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
-    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz);
 
-    // Habilita a definição da cor do material a partir da cor corrente
-    glEnable(GL_COLOR_MATERIAL);
-    //Habilita o uso de iluminação
+    glLightfv (GL_LIGHT0, GL_DIFFUSE, difusa);  // cria luz difusa
+    GLfloat aux[] = {0.0,0.0,0.0,0.0};
+    glLightfv (GL_LIGHT0, GL_POSITION,positionLuz );  // define que a luz é direcional
+
+
     glEnable(GL_LIGHTING);
-    // Habilita a luz de número 0
     glEnable(GL_LIGHT0);
-    // Habilita o depth-buffering
     glEnable(GL_DEPTH_TEST);
+
+
+
 }
 
 void display(void)
@@ -372,10 +423,21 @@ void display(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glColor3f(1.0,0.0,0.0);
+
+    
+
     glPushMatrix();
-        //glTranslatef(-1.0,-2.0,rotacaoGeral);
-        glRotatef(anguloTotal,1.0,0.0,0.0); // y
         
+        glRotatef(anguloTotal,0.0,1.0,0.0); // y
+        glTranslatef(0.0,-2.0,2.0);
+
+        /* //LUZ
+        glPushMatrix();
+            glTranslatef(positionLuz[0],positionLuz[1],positionLuz[2]);            
+            glutSolidCube(1.0);
+        glPopMatrix();
+        */
+
         desenhaParteBaixo();
         glPushMatrix();
             glTranslatef(0.0,3.0,0.0);
@@ -384,6 +446,8 @@ void display(void)
         glPushMatrix();
             glTranslatef(0.0,3.0,0.0);
             desenhaParteCima();
+            glTranslatef(0.5,2.2,-0.4);
+            desenhaCrucifixo();
         glPopMatrix();
         glPushMatrix();
             glTranslatef(0.5,3.6,-0.5);
@@ -397,17 +461,23 @@ void display(void)
         glPopMatrix();
         
         glPushMatrix(); // igreja em si (paralelepipedo)
+            eixoNorma = EIXO_Z;
+            sinalNorma = POSITIVO;
             glTranslatef(-3.5,0.0,0.0);
             glTranslatef(2.0,0.0,-1.0);
             glColor3f(0.0,1.0,1.0);
             desenharFaceLateral(2,3,true); // face frontal
             glTranslatef(4.0,0.0,0.0);
            
+
+            
+            sinalNorma = POSITIVO;
             glColor3f(1.0,1.0,1.0);
-            glRotatef(90,0.0,1.0,0.0); 
+            glRotatef(90,0.0,1.0,0.0);
             desenharFaceLateral(2,3); // face direita
             
             glTranslatef(0.0,0.0,-4);
+            sinalNorma = NEGATIVO;
             desenharFaceLateral(2,3); // face esquerda
 
             glRotatef(-90,0.0,1.0,0.0);
@@ -496,10 +566,11 @@ int main(int argc, char **argv)
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
     init();
+    
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
-    ilumina();
+    
     glutMainLoop();
     
     return 0;
