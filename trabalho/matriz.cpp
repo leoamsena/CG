@@ -32,6 +32,7 @@ GLfloat* calculaNorma(){
 
 double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
 double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3},{0.5,3.0}};
+bool rodarAnim = false,sinoPositivo=true;
 void ilumina(void);
 void init(void)
 {
@@ -520,6 +521,31 @@ void reshape(int w, int h)
 
 }
 
+void animacao(int  a){
+    if(!rodarAnim) return;
+    glutPostRedisplay();
+    anguloMinutos = (anguloMinutos + 1) % 360;
+    if(anguloMinutos%72==0)
+    anguloHoras = ((anguloHoras+6)%360);
+    if(sinoPositivo){
+        if((anguloSino+1)%360<8){
+            anguloSino = (anguloSino + 1) %360;
+            anguloBadalo = (anguloBadalo - (1+2)) %360;
+        }else
+            sinoPositivo = !sinoPositivo;
+    }else{
+        if((anguloSino-1)%360>-8){
+            anguloSino = (anguloSino - 1) %360;
+            anguloBadalo = (anguloBadalo + (1+2)) %360;
+        }else
+            sinoPositivo = !sinoPositivo;
+        
+    }
+    
+    
+    
+    glutTimerFunc(1000 / 60, animacao, 0);
+}
 void keyboard(unsigned char key, int x, int y)
 {
 
@@ -539,15 +565,15 @@ void keyboard(unsigned char key, int x, int y)
             break;
 
         case 's':
-            if((anguloSino+5)%360<10){
-                anguloSino = (anguloSino + 5) %360;
-                anguloBadalo = (anguloBadalo - (5+2)) %360;
+            if((anguloSino+1)%360<8){
+                anguloSino = (anguloSino + 1) %360;
+                anguloBadalo = (anguloBadalo - (1+2)) %360;
             }
             break;
         case 'S':
-            if((anguloSino+5)%360>-10){
-                anguloSino = (anguloSino - 5) %360;
-                anguloBadalo = (anguloBadalo + 5 + 2) %360;
+            if((anguloSino-1)%360>-8){
+                anguloSino = (anguloSino - 1) %360;
+                anguloBadalo = (anguloBadalo + 1 + 2) %360;
             }
             break;
         case 'b':
@@ -562,11 +588,16 @@ void keyboard(unsigned char key, int x, int y)
         case 'h':
             anguloHoras = (anguloHoras + 5) %360;
             break;
+        case ' ':
+            rodarAnim =!rodarAnim;
+            animacao(0);
+            break;
         default:
             break;
     }
     glutPostRedisplay();
 }
+
 
 int main(int argc, char **argv)
 {
@@ -580,6 +611,8 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+
+    
     
     glutMainLoop();
     
