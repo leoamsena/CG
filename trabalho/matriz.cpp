@@ -16,7 +16,7 @@ using namespace std;
 #define POSITIVO 1
 #define NEGATIVO -1
 
-int anguloTotal = 0;
+int anguloTotal = 0,anguloTotalX =0 ;
 int aux = 0;
 int anguloSino = 0,anguloBadalo = 0,anguloMinutos =0,anguloHoras=0;
 GLfloat positionLuz [] = { 0.0, 0.0, 2.0, 1.0 };
@@ -57,7 +57,7 @@ void quartoDeCirculo(double *extremaEsquerda,double *baixo,double *cima,int qtdP
 }
 
 void desenhaMetadeFaceBaixo(){
-    glColor3f(1,0,0);
+    
     glBegin(GL_TRIANGLE_STRIP);
         glNormal3fv(calculaNorma());
         for(int i=0;i<5;i++)
@@ -283,6 +283,7 @@ void desenhaRetangulo(double h,double l){
 }
 
 void desenhaSino(){
+    glColor3f(1.0,1.0,0.0);
     glPushMatrix();
         glRotatef(anguloSino,1.0,0.0,0.0);
         glRotatef(270,1.0,0.0,0.0);
@@ -379,7 +380,7 @@ void desenhaRelogio(){
         glTranslatef(0.25,0.0,0.01);
         glPushMatrix();
             glRotatef(anguloMinutos,0.0,0.0,1.0);
-            glColor3f(0.0,1.0,1.0);
+            glColor3f(1.0,1.0,1.0);
             glBegin(GL_QUADS);
                 glVertex3f(0.0,0.0,0.0);
                 glVertex3f(0.03,0.15,0.0);
@@ -432,13 +433,14 @@ void display(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
-    glColor3f(1.0,0.0,0.0);
+    glColor3f(0.6039,0.8039,0.1960);
 
     
 
     glPushMatrix();
         
         glRotatef(anguloTotal,0.0,1.0,0.0); // y
+        glRotatef(anguloTotalX,1.0,1.0,0.0); // x
         glTranslatef(0.0,-2.0,2.0);
 
         /* //LUZ
@@ -461,7 +463,7 @@ void display(void)
         glPopMatrix();
         glPushMatrix();
             glTranslatef(0.5,3.6,-0.5);
-            glColor3f(1.0,1.0,0.0);
+            
             desenhaSino();
         glPopMatrix();
         glPushMatrix();
@@ -469,20 +471,20 @@ void display(void)
             glTranslatef(0.25,3.0,0.01);
             desenhaRelogio();
         glPopMatrix();
-        
+        glColor3f(0.6039,0.6039,0.1960);
         glPushMatrix(); // igreja em si (paralelepipedo)
             eixoNorma = EIXO_Z;
             sinalNorma = POSITIVO;
             glTranslatef(-3.5,0.0,0.0);
             glTranslatef(2.0,0.0,-1.0);
-            glColor3f(0.0,1.0,1.0);
+            
             desenharFaceLateral(2,3,true); // face frontal
             glTranslatef(4.0,0.0,0.0);
            
 
             
             sinalNorma = POSITIVO;
-            glColor3f(1.0,1.0,1.0);
+            
             glRotatef(90,0.0,1.0,0.0);
             desenharFaceLateral(2,3); // face direita
             
@@ -495,11 +497,13 @@ void display(void)
             desenharFaceLateral(1,4); // face traseira
             
             sinalNorma = POSITIVO;
-            glColor3f(1.0,1.0,0.0);
+
+            glColor3f(0.6039,0.6039,0.1960);
+            
             glRotatef(90,1.0,0.0,0.0);
             desenhaRetangulo(4.0,4.0);
             sinalNorma = NEGATIVO;
-            glColor3f(1.0,0.0,1.0);
+            
             glTranslatef(0.0,0.0,-1.5);
             desenhaRetangulo(4.0,4.0);
         glPopMatrix();
@@ -555,15 +559,10 @@ void keyboard(unsigned char key, int x, int y)
             exit(0);
             break;
         case 'a':
-            anguloTotal = (anguloTotal + 5) %360;
+            rodarAnim =!rodarAnim;
+            animacao(0);
             break;
-        case 'u':
-            aux = (aux + 1);
-            break;
-        case 'U':
-            aux = (aux -1);
-            break;
-
+       
         case 's':
             if((anguloSino+1)%360<8){
                 anguloSino = (anguloSino + 1) %360;
@@ -576,28 +575,27 @@ void keyboard(unsigned char key, int x, int y)
                 anguloBadalo = (anguloBadalo + 1 + 2) %360;
             }
             break;
-        case 'b':
-            anguloBadalo = (anguloBadalo + 5) %360;
-            break;
-        case 'B':
-            anguloBadalo = (anguloBadalo - 5) %360;
-            break;
         case 'm':
             anguloMinutos = (anguloMinutos + 5) %360;
             break;
         case 'h':
             anguloHoras = (anguloHoras + 5) %360;
             break;
-        case ' ':
-            rodarAnim =!rodarAnim;
-            animacao(0);
-            break;
         default:
             break;
     }
     glutPostRedisplay();
 }
-
+void MouseOptions(int button, int state, int x, int y)
+{
+  if (button == GLUT_LEFT_BUTTON)
+  {
+    anguloTotal = (anguloTotal + 5)%360;
+  }else if(button == GLUT_RIGHT_BUTTON){
+    anguloTotalX = (anguloTotalX+5)%360;
+  }
+  glutPostRedisplay();
+}
 
 int main(int argc, char **argv)
 {
@@ -611,6 +609,7 @@ int main(int argc, char **argv)
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutMouseFunc(MouseOptions);
 
     
     
