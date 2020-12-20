@@ -440,7 +440,7 @@ void display(void)
     glPushMatrix();
         
         glRotatef(anguloTotal,0.0,1.0,0.0); // y
-        glRotatef(anguloTotalX,1.0,1.0,0.0); // x
+        glRotatef(anguloTotalX,1.0,0.0,0.0); // x
         glTranslatef(0.0,-2.0,2.0);
 
         /* //LUZ
