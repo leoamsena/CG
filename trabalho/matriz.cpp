@@ -17,23 +17,53 @@ using namespace std;
 #define NEGATIVO -1
 
 int anguloTotal = 0,anguloTotalX =0 ;
-int aux = 0;
 int anguloSino = 0,anguloBadalo = 0,anguloMinutos =0,anguloHoras=0;
 GLfloat positionLuz [] = { 0.0, 0.0, 2.0, 1.0 };
 
 int eixoNorma;
 int sinalNorma = POSITIVO;
+/* Declarações de funções */
+GLfloat* calculaNorma();
+void init(void);
+void quartoDeCirculo(double *extremaEsquerda,double *baixo,double *cima,int qtdPts);
+void desenhaMetadeFaceBaixo();
+void desenhaCrucifixo();
+void desenhaFaceBaixo();
+void desenhaParteBaixo();
+void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaParede,bool comecoMenor);
+void desenharFaceLateral(int numeroJanelas,double larguraParede,bool portaNoMeio);
+void desenhaFaceMeio();
+void desenhaParteMeio();
+void desenhaParteCima();
+void desenhaRetangulo(double h,double l);
+void desenhaSino();
+void desenhaCirculoCompleto(double raio);
+void desenhaRelogio();
+void desenhaTorre();
+void desenhaIgreja();
+void ilumina(void);
+void display(void);
+void reshape(int w, int h);
+void animacao(int  a);
+void keyboard(unsigned char key, int x, int y);
+void MouseOptions(int button, int state, int x, int y);
+/* FIM das declarações de funções */
+
+
+
+
+
+double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
+double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3},{0.5,3.0}};
+bool rodarAnim = false,sinoPositivo=true;
+
+
 GLfloat* calculaNorma(){
     static GLfloat norma[] = {0.0,0.0,0.0};
     norma[eixoNorma] = sinalNorma*1.0;
     return norma;
 }
 
-
-double ptsMeio[][2] = {{0.1,0.0},{0.2,0.0},{0.1,0.8},{0.2,0.7},{0.1,1.0},{0.5,1.0},{0.1,1.2},{0.5,1.2}};
-double ptsBaixo[][2] = {{0.0,0.0},{0.2,0.0},{0.0,0.8},{0.2,0.7},{0.0,1.0},{0.5,1.0},{0.0,3.0},{0.2,3.0},{0.5,3.3},{0.5,3.0}};
-bool rodarAnim = false,sinoPositivo=true;
-void ilumina(void);
 void init(void)
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -139,7 +169,7 @@ void desenhaParteBaixo(){
     
 }
 
-void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaJanela,double alturaParede,bool comecoMenor=false){
+void desenhaMetadeJanelaFaceLateral(double xFinal,double yBaixo,double alturaParede,bool comecoMenor=false){
     double baixo[]={xFinal - 0.3,yBaixo,0.0f},cima[]={xFinal,alturaParede,0.0f};
     double xInicial = comecoMenor?(baixo[0]-0.2):0.0;
     double extremaEsquerda[] ={xInicial,alturaParede,0.0f};
@@ -176,14 +206,14 @@ void desenharFaceLateral(int numeroJanelas=1,double larguraParede=2.0,bool porta
     glPushMatrix();
 
         for(int i=0;i<numeroJanelas;i++){
-            GLfloat norma = {};
+            
             glPushMatrix();
                 
-                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede,portaNoMeio && i-1==portaAPartirDaJanela);
+                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaParede,portaNoMeio && i-1==portaAPartirDaJanela);
                 glTranslatef(xFinal*2,0.0,0.0);
                 glRotatef(180,0.0,1.0,0.0);   
                 sinalNorma = -1*sinalNorma;
-                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaJanela,alturaParede,portaNoMeio && i == portaAPartirDaJanela);
+                desenhaMetadeJanelaFaceLateral(xFinal,yBaixo,alturaParede,portaNoMeio && i == portaAPartirDaJanela);
                 sinalNorma = -1*sinalNorma;
             glPopMatrix();
             glTranslatef(xFinal*2,0.0,0.0);
@@ -401,78 +431,8 @@ void desenhaRelogio(){
 
     glPopMatrix();
 }
-
-void ilumina(void)
-{
-    
-    GLfloat difusa[] = { 1.0, 1.0, 1.0, 1.0};
-    
-    glShadeModel(GL_FLAT); // especifica o método de iluminação constrante
-    glColorMaterial(GL_FRONT_AND_BACK,GL_DIFFUSE); // determina que a reflexão aconteça para as faces de frente e de trás dos objetos
-    //glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT);
-
-
-
-    glEnable(GL_COLOR_MATERIAL); // habilita as colorações
-
-
-    glLightfv (GL_LIGHT0, GL_DIFFUSE, difusa);  // cria luz difusa
-    GLfloat aux[] = {0.0,0.0,0.0,0.0};
-    glLightfv (GL_LIGHT0, GL_POSITION,positionLuz );  // define que a luz é direcional
-
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_DEPTH_TEST);
-
-
-
-}
-
-void display(void)
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-    glColor3f(0.6039,0.8039,0.1960);
-
-    
-
-    glPushMatrix();
-        
-        glRotatef(anguloTotal,0.0,1.0,0.0); // y
-        glRotatef(anguloTotalX,1.0,0.0,0.0); // x
-        glTranslatef(0.0,-2.0,2.0);
-
-        /* //LUZ
-        glPushMatrix();
-            glTranslatef(positionLuz[0],positionLuz[1],positionLuz[2]);            
-            glutSolidCube(1.0);
-        glPopMatrix();
-        */
-
-        desenhaParteBaixo();
-        glPushMatrix();
-            glTranslatef(0.0,3.0,0.0);
-            desenhaParteMeio();
-        glPopMatrix();
-        glPushMatrix();
-            glTranslatef(0.0,3.0,0.0);
-            desenhaParteCima();
-            glTranslatef(0.5,2.2,-0.4);
-            desenhaCrucifixo();
-        glPopMatrix();
-        glPushMatrix();
-            glTranslatef(0.5,3.6,-0.5);
-            
-            desenhaSino();
-        glPopMatrix();
-        glPushMatrix();
-            glColor3f(0.0,0.0,1.0);
-            glTranslatef(0.25,3.0,0.01);
-            desenhaRelogio();
-        glPopMatrix();
-        glColor3f(0.6039,0.6039,0.1960);
-        glPushMatrix(); // igreja em si (paralelepipedo)
+void desenhaIgreja(){
+    glPushMatrix(); // igreja em si (paralelepipedo)
             eixoNorma = EIXO_Z;
             sinalNorma = POSITIVO;
             glTranslatef(-3.5,0.0,0.0);
@@ -507,6 +467,71 @@ void display(void)
             glTranslatef(0.0,0.0,-1.5);
             desenhaRetangulo(4.0,4.0);
         glPopMatrix();
+}
+void desenhaTorre(){
+    desenhaParteBaixo();
+        glPushMatrix();
+            glTranslatef(0.0,3.0,0.0);
+            desenhaParteMeio();
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(0.0,3.0,0.0);
+            desenhaParteCima();
+            glTranslatef(0.5,2.2,-0.4);
+            desenhaCrucifixo();
+        glPopMatrix();
+        glPushMatrix();
+            glTranslatef(0.5,3.6,-0.5);
+            
+            desenhaSino();
+        glPopMatrix();
+        glPushMatrix();
+            glColor3f(0.0,0.0,1.0);
+            glTranslatef(0.25,3.0,0.01);
+            desenhaRelogio();
+        glPopMatrix();
+}
+
+void ilumina(void)
+{
+    
+    GLfloat difusa[] = { 1.0, 1.0, 1.0, 1.0};
+    
+    glShadeModel(GL_FLAT); // especifica o método de iluminação constrante
+    glColorMaterial(GL_FRONT_AND_BACK,GL_DIFFUSE); // determina que a reflexão aconteça para as faces de frente e de trás dos objetos
+    
+    glEnable(GL_COLOR_MATERIAL); // habilita as colorações
+
+    glLightfv (GL_LIGHT0, GL_DIFFUSE, difusa);  // cria luz difusa
+    
+    glLightfv (GL_LIGHT0, GL_POSITION,positionLuz );  // define que a luz é direcional
+
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+
+}
+
+void display(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+
+    
+    glColor3f(0.6039,0.8039,0.1960);
+
+    
+
+    glPushMatrix();
+        
+        glRotatef(anguloTotal,0.0,1.0,0.0); // y
+        glRotatef(anguloTotalX,1.0,0.0,0.0); // x
+        glTranslatef(0.0,-2.0,2.0);
+
+        desenhaTorre();
+        glColor3f(0.6039,0.6039,0.1960);
+        desenhaIgreja();
     glPopMatrix();
     glutSwapBuffers();
 }
@@ -514,10 +539,10 @@ void display(void)
 
 void reshape(int w, int h)
 {
-    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+    glViewport(0, 0, static_cast<GLsizei> (w), static_cast<GLsizei> (h));
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(100.0, (GLfloat)w / (GLfloat)h, 1.0, 20.0);
+    gluPerspective(100.0, static_cast<GLfloat> (w) / static_cast<GLfloat> (h), 1.0, 20.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0.0, 0.0, -5.0);
@@ -604,15 +629,11 @@ int main(int argc, char **argv)
     glutInitWindowSize(1000, 500);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
-    init();
-    
+    init();    
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutMouseFunc(MouseOptions);
-
-    
-    
     glutMainLoop();
     
     return 0;
