@@ -1,8 +1,3 @@
-/*
- *  Este código é uma modificação de "robo.cpp" com o intuito de realizar os movimentos sozinho.
- *  Foi feito como curiosidade, sendo que 
- */
-
 #include <GL/glut.h>
 #include <cstdlib>
 #include <iostream>
@@ -553,9 +548,9 @@ void reshape(int w, int h)
 void animacao(int  a){
     if(!rodarAnim) return;
     glutPostRedisplay();
-    anguloMinutos = (anguloMinutos + 1) % 360;
+    anguloMinutos = (anguloMinutos - 1) % 360;
     if(anguloMinutos%72==0)
-    anguloHoras = ((anguloHoras+6)%360);
+    anguloHoras = ((anguloHoras-6)%360);
     if(sinoPositivo){
         if((anguloSino+1)%360<8){
             anguloSino = (anguloSino + 1) %360;
@@ -601,10 +596,10 @@ void keyboard(unsigned char key, int x, int y)
             }
             break;
         case 'm':
-            anguloMinutos = (anguloMinutos + 5) %360;
+            anguloMinutos = (anguloMinutos - 5) %360;
             break;
         case 'h':
-            anguloHoras = (anguloHoras + 5) %360;
+            anguloHoras = (anguloHoras - 5) %360;
             break;
         default:
             break;
