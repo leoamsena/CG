@@ -52,23 +52,62 @@ void init(void)
 {
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glShadeModel(GL_FLAT);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+}
+
+void defineIluminacao()
+{
+    // Define os parâmetros através de vetores RGBA - o último valor deve ser
+    // sempre 1.0f (transparência, não usada neste exemplo)
+    float luzAmbiente[4] = {0.2f, 0.2f, 0.2f, 1.0f};
+    float luzDifusa[4] = {0.7f, 0.7f, 0.7f, 1.0f};
+    float luzEspecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float posicaoLuz[4] = {10.0f, 10.0f, 0.0f, 1.0f};
+
+    // Ativa o uso da luz ambiente
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente);
+
+    // Define os parâmetros da luz de número 0
+    glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular);
+    glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz);
+
+
+    
+
+    // Brilho do material
+    float especularidade[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    int especMaterial = 128;
+
+    // Define a reflectância do material
+    glMaterialfv(GL_FRONT, GL_SPECULAR, especularidade);
+
+    // Define a concentração do brilho
+    glMateriali(GL_FRONT, GL_SHININESS, especMaterial);
 }
 
 void display(void)
 {
+    defineIluminacao();
     glClear(GL_COLOR_BUFFER_BIT);
     glPushMatrix();
+        glColor3f(1.0,0.0,1.0);
         glRotatef((GLfloat)posX, 0.0, 1.0, 0.0);
         //TRANSFORMAÇÕES NO BONECO TODO
         glPushMatrix();
             glScalef(1.0, 2.0, 1.0);
             glTranslatef(-1.0, 0.0, 0.0);
-            glutWireCube(1.0); // corpo
+            glutSolidCube(1.0); // corpo
+            
         glPopMatrix();
 
         glPushMatrix();
             glTranslatef(-1.0, 1.3, 0.0);
-            glutWireSphere(0.8, 20, 16); // cabeça
+            glutSolidSphere(0.8, 20, 16); // cabeça
         glPopMatrix();
 
         glPushMatrix();
@@ -78,7 +117,7 @@ void display(void)
             glTranslatef(0.1, 0.0, 0.0);
             glPushMatrix();
                 glScalef(1.2, 0.4, 1.0);
-                glutWireCube(1.0); // ombro
+                glutSolidCube(1.0); // ombro
             glPopMatrix();
 
             glTranslatef(1.0, 0.0, 0.0);
@@ -86,7 +125,7 @@ void display(void)
             glTranslatef(0.1, 0.0, 0.0);
             glPushMatrix();
                 glScalef(1.2, 0.4, 1.0);
-                glutWireCube(1.0); // braço 1
+                glutSolidCube(1.0); // braço 1
             glPopMatrix();
 
             glTranslatef(1.0, 0.0, 0.0);
@@ -94,16 +133,17 @@ void display(void)
             glTranslatef(0.1, 0.0, 0.0);
             glPushMatrix();
                 glScalef(1.2, 0.4, 1.0);
-                glutWireCube(1.0); // braço 1
+                glutSolidCube(1.0); // braço 1
             glPopMatrix();
-
+            glColor3f(1.0, 0.0, 0.0);
             glPushMatrix();
+                
                 glTranslatef(0.5, 0.0, 0.0);
                 glRotatef((GLfloat)falange1, 0.0, 0.0, 1.0);
                 glTranslatef(0.4, -0.2, 0.0);
                 glPushMatrix();
                     glScalef(1.2, 0.4, 1.0);
-                    glutWireCube(0.5); // falange 1
+                    glutSolidCube(0.5); // falange 1
                 glPopMatrix();
 
                 glTranslatef(0.5, 0.0, 0.0);
@@ -111,20 +151,21 @@ void display(void)
                 glTranslatef(0.1, 0.0, 0.0);
                 glPushMatrix();
                     glScalef(1.2, 0.4, 1.0);
-                    glutWireCube(0.5); // falange 2
+                    glutSolidCube(0.5); // falange 2
                 glPopMatrix();
 
                 glPopMatrix();
 
                 // segundo dedo
-
+                glColor3f(1.0, 0.0, 0.5);
                 glPushMatrix();
+                
                 glTranslatef(0.5, 0.0, 0.0);
                 glRotatef((GLfloat)falange3, 0.0, 0.0, 1.0);
                 glTranslatef(0.4, 0.2, 0.0);
                 glPushMatrix();
                     glScalef(1.2, 0.4, 1.0);
-                    glutWireCube(0.5); // falange 3
+                    glutSolidCube(0.5); // falange 3
                 glPopMatrix();
 
                 glTranslatef(0.5, 0.0, 0.0);
@@ -132,7 +173,7 @@ void display(void)
                 glTranslatef(0.1, 0.0, 0.0);
                 glPushMatrix();
                     glScalef(1.2, 0.4, 1.0);
-                    glutWireCube(0.5); // falange 4
+                    glutSolidCube(0.5); // falange 4
                 glPopMatrix();
 
             glPopMatrix();
